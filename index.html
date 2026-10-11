@@ -245,6 +245,7 @@ html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
   var root=document.documentElement, tb=$('theme'), sb=$('sound');
   function setTheme(t,save){
     root.setAttribute('data-theme',t);
+    var tc=document.querySelector('meta[name="theme-color"]'); if(tc)tc.setAttribute('content',t==='dark'?'#161616':'#ffffff');
     var l=t==='dark'?'Modo claro':'Modo oscuro'; tb.setAttribute('aria-label',l); tb.title=l;
     if(save){try{localStorage.setItem('pomo-theme2',t)}catch(e){}}
   }

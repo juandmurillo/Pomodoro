@@ -4,8 +4,8 @@ POMODORO (app instalable)
 2. Abre la direccion desde el telefono.
    - Android (Chrome): menu de tres puntos > "Instalar app".
    - iPhone (Safari): Compartir > "Anadir a pantalla de inicio".
-3. Al abrirla desde el icono funciona a pantalla completa y sin internet.
+3. Abre la app desde su icono (no desde el navegador).
 
 Si ya habias subido una version anterior, reemplaza index.html, sw.js y manifest.webmanifest.
-Despues desinstala la app del telefono y vuelve a instalarla para que tome el manifiesto nuevo.
-Para publicar futuras versiones, cambia VERSION en sw.js (pomodoro-v5 a pomodoro-v6).
+Despues DESINSTALA la app del telefono y vuelve a instalarla para que tome el manifiesto nuevo.
+Para publicar futuras versiones, cambia VERSION en sw.js (pomodoro-v6 a pomodoro-v7).
