@@ -90,8 +90,6 @@ html[data-theme="dark"] .i-moon,html[data-theme="light"] .i-sun{display:none}
 html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
 .fs .side,.fs .brand,.fs .foot{display:none}
 .fs body{touch-action:manipulation}
-.fshint{position:fixed;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));text-align:center;font-size:12px;color:var(--muted);opacity:0;pointer-events:none;transition:opacity .4s}
-.fshint.on{opacity:1}
 @media (max-width:640px){:root{--pad:14px}.side{top:52px;transform:none;flex-direction:row}.side.l{left:12px}.side.r{right:12px}}
 </style>
 </head>
@@ -290,17 +288,16 @@ html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
   $('cancel').addEventListener('click',closeSettings);
   ov.addEventListener('click',function(e){if(e.target===ov)closeSettings()});
 
-  var fsBtn=$('full'), fsTid=null;
-  var hintEl=document.createElement('div');hintEl.className='fshint';hintEl.textContent='Toca dos veces o pulsa Esc para salir';document.body.appendChild(hintEl);
+  var fsBtn=$('full');
   function isFs(){return root.classList.contains('fs')}
   function enterFs(){
     root.classList.add('fs');fsBtn.blur();
-    var r=root.requestFullscreen&&root.requestFullscreen();
+    var sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+    var r=(!sa&&root.requestFullscreen)?root.requestFullscreen():null;
     if(r&&r.catch)r.catch(function(){});
-    hintEl.classList.add('on');clearTimeout(fsTid);fsTid=setTimeout(function(){hintEl.classList.remove('on')},2800);
   }
   function exitFs(){
-    root.classList.remove('fs');hintEl.classList.remove('on');
+    root.classList.remove('fs');
     if(document.fullscreenElement&&document.exitFullscreen){var r=document.exitFullscreen();if(r&&r.catch)r.catch(function(){})}
   }
   fsBtn.addEventListener('click',function(){isFs()?exitFs():enterFs()});
