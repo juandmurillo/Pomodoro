@@ -1,0 +1,12 @@
+POMODORO (app instalable)
+
+1. Sube esta carpeta a un hosting con https. Lo más fácil:
+   - Netlify Drop: entra a app.netlify.com/drop y arrastra la carpeta "pomodoro-pwa".
+   - GitHub Pages: sube los archivos a un repositorio y activa Pages.
+2. Abre la dirección que te den desde el teléfono.
+   - Android (Chrome): menú de tres puntos > "Instalar app".
+   - iPhone (Safari): Compartir > "Añadir a pantalla de inicio".
+3. Al abrirla desde el icono funciona a pantalla completa y sin internet.
+
+Para publicar una versión nueva de index.html, cambia VERSION en sw.js
+(por ejemplo de pomodoro-v1 a pomodoro-v2) para que el teléfono se actualice.
