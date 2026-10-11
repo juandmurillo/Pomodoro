@@ -23,7 +23,7 @@
 :root[data-theme="light"]{--bg:#fff;--card:#f3f3f1;--card-low:#ebebe8;--ink:#26272b;--ui:#26272b;--muted:#9a9ba1;--split:#fff;--ring:#c9c9c4;--panel:#fff;--edge:#e7e7e4;color-scheme:light}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden}
-body{background:var(--bg);color:var(--ui);font-family:Helvetica,Arial,sans-serif;transition:background .25s}
+body{background:var(--bg);color:var(--ui);font-family:Helvetica,Arial,sans-serif;transition:background .25s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 button{font-family:inherit}
 button:focus-visible{outline:2px solid var(--ui);outline-offset:3px}
 
@@ -308,7 +308,15 @@ html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
   document.addEventListener('fullscreenchange',function(){
     if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}if(isFs())exitFs()}
   });
-  document.addEventListener('dblclick',function(){if(isFs())exitFs()});
+  var lastTap=0,lastX=0,lastY=0;
+  document.addEventListener('pointerup',function(e){
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    if(!ov.hidden||(e.target.closest&&e.target.closest('button,input,label,.panel')))return;
+    var t=Date.now();
+    if(t-lastTap<350&&Math.abs(e.clientX-lastX)<40&&Math.abs(e.clientY-lastY)<40){
+      lastTap=0; if(isFs())exitFs();else enterFs();
+    }else{lastTap=t;lastX=e.clientX;lastY=e.clientY}
+  });
 
   document.addEventListener('keydown',function(e){
     var tg=e.target.tagName;
@@ -328,16 +336,13 @@ html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
     if(typeof window.orientation==='number')return Math.abs(window.orientation)!==90;
     return window.innerHeight>=window.innerWidth;
   }
-  function isInstalled(){
-    try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true}catch(e){return false}
-  }
   var rotBtn=$('rotate'), canLock=!!(screen.orientation&&screen.orientation.lock);
   if(!canLock)rotBtn.style.display='none';
   function lockTo(want){try{var r=screen.orientation.lock(want);if(r&&r.catch)r.catch(function(){})}catch(e){}}
   function flipOrientation(){
     if(!canLock)return;
     var want=devPortrait()?'landscape':'portrait';
-    if(isInstalled()||document.fullscreenElement){lockTo(want);return}
+    if(document.fullscreenElement){lockTo(want);return}
     var r=root.requestFullscreen?root.requestFullscreen():null;
     if(r&&r.then)r.then(function(){lockTo(want)}).catch(function(){});
     else lockTo(want);

@@ -6,6 +6,5 @@ POMODORO (app instalable)
    - iPhone (Safari): Compartir > "Anadir a pantalla de inicio".
 3. Abre la app desde su icono (no desde el navegador).
 
-Si ya habias subido una version anterior, reemplaza index.html, sw.js y manifest.webmanifest.
-Despues DESINSTALA la app del telefono y vuelve a instalarla para que tome el manifiesto nuevo.
-Para publicar futuras versiones, cambia VERSION en sw.js (pomodoro-v6 a pomodoro-v7).
+Si ya habias subido una version anterior, reemplaza index.html y sw.js.
+Para publicar futuras versiones, cambia VERSION en sw.js (pomodoro-v7 a pomodoro-v8).
