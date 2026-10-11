@@ -92,12 +92,6 @@ html[data-theme="dark"] .i-moon,html[data-theme="light"] .i-sun{display:none}
 html.fs{--c:min(calc((100vw - 48px - 24px)/2.38),84vh)}
 .fs .side,.fs .brand,.fs .foot{display:none}
 .fs body{touch-action:manipulation}
-html.rot body{position:fixed;top:0;left:0;width:100vh;height:100vw;transform-origin:0 0;transform:translateX(100vw) rotate(90deg)}
-@supports (height:100dvh){html.rot body{width:100dvh;height:100dvw;transform:translateX(100dvw) rotate(90deg)}}
-html.rot{--pad:14px;--c:min(calc((100vh - 2*var(--pad) - 24px)/2.38),62vw)}
-html.fs.rot{--c:min(calc((100vh - 72px)/2.38),84vw)}
-@supports (height:100dvh){html.rot{--c:min(calc((100dvh - 2*var(--pad) - 24px)/2.38),62dvw)}html.fs.rot{--c:min(calc((100dvh - 72px)/2.38),84dvw)}}
-.rot .side{top:52px;transform:none;flex-direction:row}.rot .side.l{left:12px}.rot .side.r{right:12px}
 @media (max-width:640px){:root{--pad:14px}.side{top:52px;transform:none;flex-direction:row}.side.l{left:12px}.side.r{right:12px}}
 </style>
 </head>
@@ -310,7 +304,9 @@ html.fs.rot{--c:min(calc((100vh - 72px)/2.38),84vw)}
     if(document.fullscreenElement&&document.exitFullscreen){var r=document.exitFullscreen();if(r&&r.catch)r.catch(function(){})}
   }
   fsBtn.addEventListener('click',function(){isFs()?exitFs():enterFs()});
-  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&isFs())exitFs()});
+  document.addEventListener('fullscreenchange',function(){
+    if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}if(isFs())exitFs()}
+  });
   document.addEventListener('dblclick',function(){if(isFs())exitFs()});
 
   document.addEventListener('keydown',function(e){
@@ -326,23 +322,26 @@ html.fs.rot{--c:min(calc((100vh - 72px)/2.38),84vw)}
     else if((e.key==='f'||e.key==='F')&&!e.metaKey&&!e.ctrlKey){isFs()?exitFs():enterFs()}
   });
 
-  var rotFrom=null;
   function devPortrait(){
     try{if(screen.orientation&&screen.orientation.type)return screen.orientation.type.indexOf('portrait')===0}catch(e){}
     if(typeof window.orientation==='number')return Math.abs(window.orientation)!==90;
     return window.innerHeight>=window.innerWidth;
   }
-  function setRot(on){root.classList.toggle('rot',on);rotFrom=on?devPortrait():null}
-  function flipOrientation(){
-    if(root.classList.contains('rot')){setRot(false);return}
-    var want=devPortrait()?'landscape':'portrait', o=screen.orientation, pr=null;
-    if(o&&o.lock){try{pr=o.lock(want)}catch(e){pr=null}}
-    if(pr&&pr.then){pr.catch(function(){setRot(true)})}else setRot(true);
+  function isInstalled(){
+    try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true}catch(e){return false}
   }
-  function onOri(){if(root.classList.contains('rot')&&devPortrait()!==rotFrom)setRot(false)}
-  $('rotate').addEventListener('click',flipOrientation);
-  window.addEventListener('orientationchange',onOri);
-  try{screen.orientation.addEventListener('change',onOri)}catch(e){}
+  var rotBtn=$('rotate'), canLock=!!(screen.orientation&&screen.orientation.lock);
+  if(!canLock)rotBtn.style.display='none';
+  function lockTo(want){try{var r=screen.orientation.lock(want);if(r&&r.catch)r.catch(function(){})}catch(e){}}
+  function flipOrientation(){
+    if(!canLock)return;
+    var want=devPortrait()?'landscape':'portrait';
+    if(isInstalled()||document.fullscreenElement){lockTo(want);return}
+    var r=root.requestFullscreen?root.requestFullscreen():null;
+    if(r&&r.then)r.then(function(){lockTo(want)}).catch(function(){});
+    else lockTo(want);
+  }
+  rotBtn.addEventListener('click',flipOrientation);
 
   render(true);
 })();
